@@ -2710,7 +2710,7 @@
     background: -webkit-linear-gradient(to right, #b0b435, #90C549);
   
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: -webkit-linear-gradient(to right, #b0b435, #90C549);
+    background: linear-gradient(to right, #b0b435, #90C549);
 }
 
 
