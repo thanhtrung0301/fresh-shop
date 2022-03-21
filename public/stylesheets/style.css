@@ -2613,7 +2613,7 @@
   
   .gradient-custom-2 {
     /* fallback for old browsers */
-    background: #b0b435;
+    background: linear-gradient(to right, #b0b435, #90C549);
   
     /* Chrome 10-25, Safari 5.1-6 */
     background: -webkit-linear-gradient(to right, #b0b435, #90C549);
@@ -2704,7 +2704,7 @@
 /* Login form*/
 .gradient-custom {
     /* fallback for old browsers */
-    background: #b0b435;
+    background: linear-gradient(to right, #b0b435, #90C549);
   
     /* Chrome 10-25, Safari 5.1-6 */
     background: -webkit-linear-gradient(to right, #b0b435, #90C549);
