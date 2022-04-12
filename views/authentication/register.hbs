@@ -13,7 +13,7 @@
                     <div class="form-outline">
                       <input type="text" id="username" class="form-control form-control-lg account-info" name="username" placeholder="Username"/>
                       <label class="form-label" for="username">Username</label>
-                      <span></span>
+                      <span id="usernameError" style="color: red;"></span>
                     </div>
                   </div>
 
@@ -22,14 +22,14 @@
                       <div class="form-outline">
                         <input type="password" id="password" class="form-control form-control-lg account-info" name="password" placeholder="Enter password"/>
                         <label class="form-label" for="password">Password</label>
-                        <span></span>
+                        <span id="passwordError" style="color: red;"></span>
                       </div>
                     </div>
                     <div class="col-md-6 mb-4 pb-2 mb-md-0 pb-md-0">
                       <div class="form-outline">
                         <input type="password" id="c_password" class="form-control form-control-lg account-info" name="c_password" placeholder="Confirm password"/>
                         <label class="form-label" for="c_password">Confirm Password</label>
-                        <span></span>
+                        <span id="c_passwordError" style="color: red;"></span>
                       </div>
                     </div>
                   </div>
@@ -103,3 +103,67 @@
 
 
 <script src="/javascripts/validateRegister.js"></script>
+<script>
+    $(function() {
+        const check = true;
+        $('#username').on('input', function() {
+            const usernameInput = this;
+            if(!usernameInput.value) {
+                $(usernameInput).addClass('is-invalid');
+                $(usernameInput).removeClass('is-valid');
+                $('#usernameError').html('You must enter username');
+            }
+            else {
+                $(usernameInput).addClass('is-valid');
+                $(usernameInput).removeClass('is-invalid');
+                $('#usernameError').html('');
+            }
+
+            $.getJSON('/api/check-username-exist/' + usernameInput.value, function(isExist) {
+                if(isExist) {
+                  $(usernameInput).addClass('is-invalid');
+                  $(usernameInput).removeClass('is-valid');
+                  $('#usernameError').html('Username already exist');
+                  $(usernameInput).attr('check', 'false');
+                }
+                else {
+                  $(usernameInput).addClass('is-valid');
+                  $(usernameInput).removeClass('is-invalid');
+                  $(usernameInput).attr('check', 'true');
+                }
+            })
+        });
+
+        $('#password').on('input', function() {
+            const passwordInput = this;
+            if(!(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/).test(this.value)) {
+                $(passwordInput).addClass('is-invalid');
+                $(passwordInput).removeClass('is-valid');
+                $('#passwordError').html('Your password is weak');
+            }
+            else {
+                $(passwordInput).addClass('is-valid');
+                $(passwordInput).removeClass('is-invalid');
+                $('#passwordError').html('');
+            }
+        })
+
+        $('#c_password').on('input', function() {
+            const confirmPasswordInput = this;
+
+            if(confirmPasswordInput.value !== $('#password').val() || !($('#password').val())) {
+                $(confirmPasswordInput).addClass('is-invalid');
+                $(confirmPasswordInput).removeClass('is-valid');
+                $('#c_passwordError').html('Password and confirm password not match');
+            }
+            else {
+                $(confirmPasswordInput).addClass('is-valid');
+                $(confirmPasswordInput).removeClass('is-invalid');
+                $('#c_passwordError').html('');
+            }
+        })
+
+
+
+    })
+</script>

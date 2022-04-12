@@ -38,4 +38,6 @@ router.get('/facebook/callback',
 
 router.get('/logout', authenticationController.logout);
 
+router.get('/api/check-username-exist/:username', authenticationController.checkUserExist);
+
 module.exports = router;

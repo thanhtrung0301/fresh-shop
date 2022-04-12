@@ -17,5 +17,6 @@ router.get('/checkout', productController.checkout);
 
 router.get('/:productId', productController.detail);
 
+router.get('/api/filter-products/:priceStart&:priceEnd', productController.filterProducts);
 
 module.exports = router;

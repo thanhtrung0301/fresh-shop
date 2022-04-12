@@ -39,3 +39,8 @@ exports.updateInfoUser = async (username, firstname, lastname, address, phonenum
         console.log("1 document updated");
     });
 }
+
+
+exports.isUserExist = async (username) => {
+    return await db().collection('user').findOne({username}) ? true : null;
+}

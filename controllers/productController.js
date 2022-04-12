@@ -1,4 +1,4 @@
-const { list } = require('../models/services/productService');
+const { list, getFilterProducts } = require('../models/services/productService');
 
 
 exports.list = async (req, res, next) => {
@@ -107,4 +107,11 @@ exports.detail = async (req, res, next) => {
     const productDetail = products[productID - 1];
 
     res.render('products/product-detail', {products, image:productDetail.image, name:productDetail.name, price:productDetail.price, description:productDetail.description});
+}
+
+
+exports.filterProducts = async(req, res) => {
+    const products = await getFilterProducts(parseInt(req.params.priceStart), parseInt(req.params.priceEnd));
+
+    res.send(products);
 }

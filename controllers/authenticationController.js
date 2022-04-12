@@ -24,3 +24,10 @@ exports.logout = function (req, res) {
     req.logout();
     res.redirect('/');
   };
+
+
+exports.checkUserExist = async(req, res) => {
+    const user = await authenticationService.isUserExist(req.params.username);
+
+    res.send(!!user);
+}
