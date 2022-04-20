@@ -1,5 +1,6 @@
-const { list, getFilterProducts } = require('../models/services/productService');
-
+const { list, getFilterProducts, getFilterProductsByType, getProductByID, getProductsByName, getProductsByNameType } = require('../models/services/productService');
+const Cart = require('../models/cart');
+let totalProducts, totalVegetables, totalFruits;
 
 exports.list = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
@@ -7,8 +8,8 @@ exports.list = async (req, res, next) => {
     const start = (page - 1) * perPage;
     const end = page * perPage;
 
-    const count = (await list()).length;
-    const totalPage = Math.ceil(count / perPage);
+    totalProducts = (await list()).length;
+    const totalPage = Math.ceil(totalProducts / perPage);
     let pagePrev = page - 1;
     let pageNext = page + 1;
     if(pageNext > totalPage)
@@ -22,7 +23,10 @@ exports.list = async (req, res, next) => {
         products, perPage, totalPage,
         pages: Array.from(Array(totalPage).keys()).map(i => i+1),
         pagePrev, pageNext,
-        pageCurrent: page
+        pageCurrent: page,
+        totalProducts,
+        totalVegetables,
+        totalFruits
     });
 }
 
@@ -38,8 +42,8 @@ exports.listFruit = async (req, res, next) => {
     })
 
     
-    const count = fruits.length;
-    const totalPage = Math.ceil(count / perPage);
+    totalFruits = fruits.length;
+    const totalPage = Math.ceil(totalFruits / perPage);
     let pagePrev = page - 1;
     let pageNext = page + 1;
     if(pageNext > totalPage)
@@ -53,7 +57,10 @@ exports.listFruit = async (req, res, next) => {
         fruits, perPage, totalPage,
         pages: Array.from(Array(totalPage).keys()).map(i => i+1),
         pagePrev, pageNext,
-        pageCurrent: page
+        pageCurrent: page,
+        totalProducts,
+        totalFruits,
+        totalVegetables
     });
 }
 
@@ -69,8 +76,8 @@ exports.listVegetables = async (req, res, next) => {
     })
 
     
-    const count = vegetables.length;
-    const totalPage = Math.ceil(count / perPage);
+    totalVegetables = vegetables.length;
+    const totalPage = Math.ceil(totalVegetables / perPage);
    
     let pagePrev = page - 1;
     let pageNext = page + 1;
@@ -82,10 +89,13 @@ exports.listVegetables = async (req, res, next) => {
     vegetables = vegetables.slice(start, end);
     
     res.render('products/listVegetables', {
-        vegetables, perPage, totalPage,
+        vegetables, perPage, totalPage, 
         pages: Array.from(Array(totalPage).keys()).map(i => i+1),
         pagePrev, pageNext,
-        pageCurrent: page
+        pageCurrent: page,
+        totalProducts,
+        totalVegetables,
+        totalFruits
     });
 }
 
@@ -94,19 +104,32 @@ exports.wishList = (req, res, next) => {
 }
 
 exports.cart = (req, res, next) => {
-    res.render('products/cart');
+    if(!req.session.cart)
+        return res.render('products/cart', {products: null});
+    const cart = new Cart(req.session.cart);
+
+    res.render('products/cart', {products: cart.generateArray(), totalPrice: cart.totalPrice})
 }
 
 exports.checkout = (req, res, next) => {
-    res.render('products/checkout');
+    if(!req.session.cart)
+        return res.render('products/cart', {products: null});
+    
+    if(!req.user) {
+        res.redirect('/login');
+    }
+    else {
+        const cart = new Cart(req.session.cart);
+
+        res.render('products/checkout', {products: cart.generateArray(), totalPrice: cart.totalPrice});
+    }
+    
 }
 
 exports.detail = async (req, res, next) => {
-    const productID = parseInt(req.params.productId);
-    const products = await list();
-    const productDetail = products[productID - 1];
+    const product = await getProductByID(req.params.productId);
 
-    res.render('products/product-detail', {products, image:productDetail.image, name:productDetail.name, price:productDetail.price, description:productDetail.description});
+    res.render('products/product-detail', {products: product, image: product.image, name: product.name, price: product.price, description: product.description});
 }
 
 
@@ -114,4 +137,66 @@ exports.filterProducts = async(req, res) => {
     const products = await getFilterProducts(parseInt(req.params.priceStart), parseInt(req.params.priceEnd));
 
     res.send(products);
+}
+
+exports.filterProductsByType = async(req, res) => {
+    const products = await getFilterProductsByType(parseInt(req.params.priceStart), parseInt(req.params.priceEnd), req.params.category);
+
+    res.send(products);
+}
+
+
+exports.addToCart = async(req, res) => {
+    const product = await getProductByID(req.params.productId);
+    const cart = new Cart(req.session.cart ? req.session.cart : {});
+   
+    cart.add(product, req.params.productId);
+    req.session.cart = cart;
+    res.redirect('back');
+}
+
+exports.removeFromCart = async(req, res) => {
+    const cart = new Cart(req.session.cart);
+   
+    cart.remove(req.params.productId);
+    req.session.cart = cart;
+    console.log(cart);
+    res.redirect('/products/cart');
+}
+
+exports.updateCart = async(req, res) => {
+    const cart = new Cart(req.session.cart);
+
+    cart.update(req.params.productId, parseInt(req.params.qty));
+    req.session.cart = cart;
+    console.log(cart);
+
+    res.redirect('/products/cart');
+}
+
+exports.searchProducts = async(req, res) => {
+    let payload = req.params.value.trim();
+    let products;
+
+    if(payload === 'all') 
+        products = await list();
+    else 
+        products = await getProductsByName(payload);
+
+    res.send(products)
+}
+
+
+exports.searchProductsType = async(req, res) => {
+    const payload = req.params.value.trim();
+    const type = req.params.category.trim();
+    let products;
+
+    if(payload === 'all') 
+        products = await list();
+    else 
+        products = await getProductsByNameType(payload, type);
+
+    console.log(products);
+    res.send(products)
 }

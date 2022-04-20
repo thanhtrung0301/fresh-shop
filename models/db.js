@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 // Replace the uri string with your MongoDB deployment's connection string.
 
@@ -15,3 +15,6 @@ exports.db = () => {
   return client.db('FreshStore');
 }
 
+exports.ObjectId = (id) => {
+  return ObjectId(id);
+}

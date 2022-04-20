@@ -58,16 +58,16 @@
                                             <div class="products-single fix">
                                                 <div class="box-img-hover">
                                                     <div class="type-lb">
-                                                        <p class="sale">Sale</p>
+                                                        <p class="new">New</p>
                                                     </div>
                                                     <img src="{{image}}" class="img-fluid" alt="Image">
                                                     <div class="mask-icon">
                                                         <ul>
-                                                            <li><a href="{{detail}}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                                                            <li><a href="/products/{{_id}}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
                                                             <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
                                                             <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
                                                         </ul>
-                                                        <a class="cart" href="#">Add to Cart</a>
+                                                        <a class="cart" href="/products/add-to-cart/{{_id}}">Add to Cart</a>
                                                     </div>
                                                 </div>
                                                 <div class="why-text">
@@ -82,9 +82,9 @@
                                 </div>
 
                                 <div role="tabpanel" class="tab-pane fade" id="list-view">
+                                     {{#fruits}}
                                     <div class="list-view-box">
                                         <div class="row">
-                                            {{#fruits}}
                                             <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
                                                 <div class="products-single fix">
                                                     <div class="box-img-hover">
@@ -94,7 +94,7 @@
                                                         <img src="{{image}}" class="img-fluid" alt="Image">
                                                         <div class="mask-icon">
                                                             <ul>
-                                                                <li><a href="{{detail}}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                                                                <li><a href="/products/{{_id}}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
                                                                 <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
                                                                 <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
                                                             </ul>
@@ -106,14 +106,14 @@
                                             <div class="col-sm-6 col-md-6 col-lg-8 col-xl-8">
                                                 <div class="why-text">
                                                     <h4>{{name}}</h4>
-                                                    <h5> <del>$ 60.00</del> ${{price}}</h5>
-                                                    <p>{{decription}}</p>
-                                                    <a class="btn hvr-hover" href="#">Add to Cart</a>
+                                                    <h5>${{price}}</h5>
+                                                    <p>{{description}}</p>
+                                                    <a class="btn hvr-hover btn-center" href="/products/add-to-cart/{{_id}}">Add to Cart</a>
                                                 </div>
                                             </div>
-                                            {{/fruits}}
                                         </div>
-                                    </div>                            
+                                    </div>  
+                                     {{/fruits}}                          
                                 </div>
                             </div>
                         </div>
@@ -130,10 +130,7 @@
 				<div class="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
                     <div class="product-categori">
                         <div class="search-product">
-                            <form action="#">
-                                <input class="form-control" placeholder="Search here..." type="text">
-                                <button type="submit"> <i class="fa fa-search"></i> </button>
-                            </form>
+                            <input class="form-control" placeholder="Search here..." type="text" id="search-box">
                         </div>
                         <div class="filter-sidebar-left">
                             <div class="title-left">
@@ -141,12 +138,12 @@
                             </div>
                             <div class="list-group list-group-collapse list-group-sm list-group-tree" id="list-group-men" data-children=".sub-men">
                                 <div class="list-group-collapse sub-men">
-                                    <a class="list-group-item list-group-item-action" href="#sub-men1" data-toggle="collapse" aria-expanded="true" aria-controls="sub-men1">Trái cây & Rau củ <small class="text-muted">(100)</small>
+                                    <a class="list-group-item list-group-item-action" href="#sub-men1" data-toggle="collapse" aria-expanded="true" aria-controls="sub-men1">Trái cây & Rau củ <small class="text-muted">({{totalProducts}})</small>
 								</a>
                                     <div class="collapse show" id="sub-men1" data-parent="#list-group-men">
                                         <div class="list-group">
-                                            <a href="/products/vegetables" class="list-group-item list-group-item-action">Rau củ <small class="text-muted">(50)</small></a>
-                                            <a href="/products/fruits" class="list-group-item list-group-item-action active">Trái cây <small class="text-muted">(10)</small></a>
+                                            <a href="/products/vegetables" class="list-group-item list-group-item-action">Rau củ <small class="text-muted">({{totalVegetables}})</small></a>
+                                            <a href="/products/fruits" class="list-group-item list-group-item-action active">Trái cây <small class="text-muted">({{totalFruits}})</small></a>
                                         </div>
                                     </div>
                                 </div>
@@ -191,3 +188,149 @@
     <script src="/javascripts/jquery-ui.js"></script>
     <script src="/javascripts/jquery.nicescroll.min.js"></script>
     <script src="/javascripts/product-pagination.js"></script>
+    <script>
+         $(function() {
+             $('.price-box-slider button').on('click', function() {
+                  const valueString = $('#amount').val().split('-');
+                  const start = parseInt(valueString[0].slice(1));
+                  const end = parseInt(valueString[1].slice(2));
+
+                  $('#grid-view .row').empty();
+                  $('#list-view').empty();
+                  $('.product-pagination').empty();
+
+                  $.getJSON(`/products/api/filter-products-by-type/${start}&${end}&Trái cây`, function(products) {
+                      $('.product-item-filter p').text(`Showing all ${products.length} products`);
+                      products.forEach(function(product) {
+                          $('#grid-view .row').append(`<div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                        <div class="products-single fix">
+                                                            <div class="box-img-hover">
+                                                                <div class="type-lb">
+                                                                    <p class="new">New</p>
+                                                                </div>
+                                                                <img src="${product.image}" class="img-fluid" alt="Image">
+                                                                <div class="mask-icon">
+                                                                    <ul>
+                                                                        <li><a href="/products/${product._id}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                                                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                                                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                                                                    </ul>
+                                                                    <a class="cart" href="/products/add-to-cart/${product._id}">Add to Cart</a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="why-text">
+                                                                <h4>${product.name}</h4>
+                                                                <h5>$${product.price}</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>`);
+
+                        const shortDescription = `${product.description.substr(0, 550)}...`;
+                          $('#list-view').append(`<div class="list-view-box">
+                                                            <div class="row">
+                                                                <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                                    <div class="products-single fix">
+                                                                        <div class="box-img-hover">
+                                                                            <div class="type-lb">
+                                                                                <p class="new">New</p>
+                                                                            </div>
+                                                                            <img src="${product.image}" class="img-fluid" alt="Image">
+                                                                            <div class="mask-icon">
+                                                                                <ul>
+                                                                                    <li><a href="/products/${product._id}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                                                                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                                                                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                                                                                </ul>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6 col-md-6 col-lg-8 col-xl-8">
+                                                                    <div class="why-text">
+                                                                        <h4>${product.name}</h4>
+                                                                        <h5>$${product.price}</h5>
+                                                                        <p>${shortDescription}</p>
+                                                                        <a class="btn hvr-hover btn-center" href="/products/add-to-cart/${product._id}">Add to Cart</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>`);
+                      })
+                  })
+             })
+        })
+    </script>
+
+    <script>
+        $(function() {
+            $('#search-box').on('input', function(){
+                const value = this.value || 'all';
+
+                $.getJSON(`/products/api/search-products-type/${value}&Trái cây`, function(products) {
+                    $('#grid-view .row').empty();
+                    $('#list-view').empty();
+                    $('.product-pagination').empty();
+
+                    $('.product-item-filter p').text(`Showing all ${products.length} products`);
+                      
+                    products.forEach(function(product) {
+                        $('#grid-view .row').append(`<div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                        <div class="products-single fix">
+                                                            <div class="box-img-hover">
+                                                                <div class="type-lb">
+                                                                    <p class="new">New</p>
+                                                                </div>
+                                                                <img src="${product.image}" class="img-fluid" alt="Image">
+                                                                <div class="mask-icon">
+                                                                    <ul>
+                                                                        <li><a href="/products/${product._id}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                                                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                                                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                                                                    </ul>
+                                                                    <a class="cart" href="/products/add-to-cart/${product._id}">Add to Cart</a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="why-text">
+                                                                <h4>${product.name}</h4>
+                                                                <h5>$${product.price}</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>`);
+
+                        const shortDescription = `${product.description.substr(0, 550)}...`;
+                          $('#list-view').append(`<div class="list-view-box">
+                                                            <div class="row">
+                                                                <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                                    <div class="products-single fix">
+                                                                        <div class="box-img-hover">
+                                                                            <div class="type-lb">
+                                                                                <p class="new">New</p>
+                                                                            </div>
+                                                                            <img src="${product.image}" class="img-fluid" alt="Image">
+                                                                            <div class="mask-icon">
+                                                                                <ul>
+                                                                                    <li><a href="/products/${product._id}" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                                                                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                                                                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                                                                                </ul>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6 col-md-6 col-lg-8 col-xl-8">
+                                                                    <div class="why-text">
+                                                                        <h4>${product.name}</h4>
+                                                                        <h5>$${product.price}</h5>
+                                                                        <p>${shortDescription}</p>
+                                                                        <a class="btn hvr-hover btn-center" href="/products/add-to-cart/${product._id}">Add to Cart</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>`);
+                    });
+                });
+            })
+        })
+    </script>
