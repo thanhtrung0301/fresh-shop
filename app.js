@@ -5,6 +5,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 
 const passport = require('./models/passport');
 const indexRouter = require('./routes/index');
@@ -24,10 +25,10 @@ app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 app.use(session({
   secret: 'keyboard cat',
@@ -38,8 +39,10 @@ app.use(passport.authenticate('session'));
 
 app.use(function (req, res, next) {
   res.locals.user = req.user;
+  res.locals.session = req.session;
   next();
 });
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
