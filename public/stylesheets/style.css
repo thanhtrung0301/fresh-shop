@@ -46,6 +46,7 @@
      -ms-transition: all .3s ease-in-out;
      -o-transition: all .3s ease-in-out;
      transition: all .3s ease-in-out;
+     cursor: pointer;
 }
  h1, h2, h3, h4, h5, h6 {
      letter-spacing: 0;
