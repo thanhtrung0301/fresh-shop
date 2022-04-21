@@ -25,10 +25,24 @@ router.get('/:productId', productController.detail);
 
 router.get('/api/filter-products/:priceStart&:priceEnd', productController.filterProducts);
 
-router.get('/api/filter-products-by-type/:priceStart&:priceEnd&:category', productController.filterProductsByType);
+router.get('/api/filter-sortAsc-products/:priceStart&:priceEnd', productController.filterSortAscProducts);
 
-router.get('/api/search-products/:value', productController.searchProducts)
+router.get('/api/filter-sortDesc-products/:priceStart&:priceEnd', productController.filterSortDescProducts);
 
-router.get('/api/search-products-type/:value&:category', productController.searchProductsType);
+router.get('/api/filter-products-by-type/:priceStart&:priceEnd&:category', productController.filterProductsByType);//
+
+router.get('/api/search-products/:value', productController.searchProducts);
+
+router.get('/api/search-sortAsc-products/:value', productController.searchSortAscProducts);
+
+router.get('/api/search-sortDesc-products/:value', productController.searchSortDescProducts);
+
+router.get('/api/search-sortDesc-products-type/:value&:category', productController.searchProductsType);//
+
+router.get('/api/list-sortAsc-products', productController.sortAscProducts);
+
+router.get('/api/list-sortDesc-products', productController.sortDescProducts);
+
+router.get('/api/list-products', productController.listProducts);
 
 module.exports = router;
