@@ -27,7 +27,7 @@ router.get('/api/filter-products/:priceStart&:priceEnd', productController.filte
 
 router.get('/api/filter-sortAsc-products/:priceStart&:priceEnd', productController.filterSortAscProducts);
 
-router.get('/api/filter-sortDesc-products/:priceStart&:priceEnd', productController.filterSortAscProducts);
+router.get('/api/filter-sortDesc-products/:priceStart&:priceEnd', productController.filterSortDescProducts);
 
 router.get('/api/filter-products-by-type/:priceStart&:priceEnd&:category', productController.filterProductsByType);//
 
