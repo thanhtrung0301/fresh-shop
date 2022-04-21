@@ -1,33 +1,9 @@
-const { list, getFilterProducts, getFilterProductsByType, getProductByID, getProductsByName, getProductsByNameType } = require('../models/services/productService');
+const { list, getFilterProducts, getFilterSortProducts, getFilterProductsByType, getProductByID, getProductsByName, getSortProductsByName, getProductsByNameType, sortProducts } = require('../models/services/productService');
 const Cart = require('../models/cart');
 let totalProducts, totalVegetables, totalFruits;
 
 exports.list = async (req, res, next) => {
-    const page = parseInt(req.query.page) || 1;
-    const perPage = 9;
-    const start = (page - 1) * perPage;
-    const end = page * perPage;
-
-    totalProducts = (await list()).length;
-    const totalPage = Math.ceil(totalProducts / perPage);
-    let pagePrev = page - 1;
-    let pageNext = page + 1;
-    if(pageNext > totalPage)
-        pageNext = totalPage;
-    else if(pagePrev < 1)
-        pagePrev = 1;
-
-    const products = (await list()).slice(start, end);
-
-    res.render('products/list', { 
-        products, perPage, totalPage,
-        pages: Array.from(Array(totalPage).keys()).map(i => i+1),
-        pagePrev, pageNext,
-        pageCurrent: page,
-        totalProducts,
-        totalVegetables,
-        totalFruits
-    });
+    res.render('products/list');
 }
 
 exports.listFruit = async (req, res, next) => {
@@ -139,6 +115,19 @@ exports.filterProducts = async(req, res) => {
     res.send(products);
 }
 
+exports.filterSortAscProducts = async(req, res) => {
+    let products = await getFilterSortProducts(parseInt(req.params.priceStart), parseInt(req.params.priceEnd));
+   
+    res.send(products);
+}
+
+exports.filterSortDescProducts = async(req, res) => {
+    let products = await getFilterSortProducts(parseInt(req.params.priceStart), parseInt(req.params.priceEnd));
+
+    res.send(products.reverse());
+}
+
+
 exports.filterProductsByType = async(req, res) => {
     const products = await getFilterProductsByType(parseInt(req.params.priceStart), parseInt(req.params.priceEnd), req.params.category);
 
@@ -146,6 +135,79 @@ exports.filterProductsByType = async(req, res) => {
 }
 
 
+exports.searchProducts = async(req, res) => {
+    let payload = req.params.value.trim();
+    let products;
+
+    if(payload === 'all') 
+        products = await list();
+    else 
+        products = await getProductsByName(payload);
+
+    res.send(products)
+}
+
+exports.searchSortAscProducts = async(req, res) => {
+    let payload = req.params.value.trim();
+    let products;
+
+    if(payload === 'all') 
+        products = await sortProducts();
+    else
+        products = await getSortProductsByName(payload);
+
+    res.send(products)
+}
+
+exports.searchSortDescProducts = async(req, res) => {
+    let payload = req.params.value.trim();
+    let products;
+
+    if(payload === 'all') 
+        products = await sortProducts();
+    else
+        products = await getSortProductsByName(payload);
+
+    res.send(products.reverse());
+}
+
+
+
+exports.searchProductsType = async(req, res) => {
+    const payload = req.params.value.trim();
+    const type = req.params.category.trim();
+    let products;
+
+    if(payload === 'all') 
+        products = await list();
+    else 
+        products = await getProductsByNameType(payload, type);
+
+    console.log(products);
+    res.send(products)
+}
+
+exports.sortAscProducts = async(req, res) => {
+    const products = await sortProducts();
+
+    res.send(products)
+}
+
+exports.sortDescProducts = async(req, res) => {   
+    const products = await sortProducts();
+
+    res.send(products.reverse())
+}
+
+exports.listProducts = async(req, res) => { 
+    const products = await list();
+
+    res.send(products)
+}
+
+
+
+// Cart Management
 exports.addToCart = async(req, res) => {
     const product = await getProductByID(req.params.productId);
     const cart = new Cart(req.session.cart ? req.session.cart : {});
@@ -172,31 +234,4 @@ exports.updateCart = async(req, res) => {
     console.log(cart);
 
     res.redirect('/products/cart');
-}
-
-exports.searchProducts = async(req, res) => {
-    let payload = req.params.value.trim();
-    let products;
-
-    if(payload === 'all') 
-        products = await list();
-    else 
-        products = await getProductsByName(payload);
-
-    res.send(products)
-}
-
-
-exports.searchProductsType = async(req, res) => {
-    const payload = req.params.value.trim();
-    const type = req.params.category.trim();
-    let products;
-
-    if(payload === 'all') 
-        products = await list();
-    else 
-        products = await getProductsByNameType(payload, type);
-
-    console.log(products);
-    res.send(products)
 }
