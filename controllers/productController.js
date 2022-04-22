@@ -235,3 +235,86 @@ exports.updateCart = async(req, res) => {
 
     res.redirect('/products/cart');
 }
+
+// Paypal Method
+const paypal = require('paypal-rest-sdk');
+
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AcmhOiTT9prOcgeATMhMCMmvIDK_NQB5a909u1vyQD38FeU7GSWoeaPnI__6EfynRdNjLpCojNupYu_G',
+    'client_secret': 'EMxkAo4ioZwVydAHeDba-AxS-IRZQFksGyqK3LA3HBOA68e1BnAehjJ1Rx_VozgHVEP0GVbV6924wj2Q'
+});
+
+exports.payPal = (req, res) => {
+    const total = req.session.cart.totalPrice;
+    const products = req.session.cart.items;
+    const list = Object.keys(products).map((index) => {
+       return {name: products[index].item.name, sku: products[index].item._id, price: products[index].item.price, currency: 'USD', quantity: products[index].qty};
+    })
+
+    console.log(list);
+    console.log(total);
+
+    const create_payment_json = {
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": "http://localhost:3000/products/pay/success",
+            "cancel_url": "http://localhost:3000/products/pay/cancel"
+        },
+        "transactions": [{
+            "item_list": {
+                "items": list
+            },
+            "amount": {
+                "currency": "USD",
+                "total": total
+            },
+            "description": "PayPal Payment"
+        }]
+    };
+
+    paypal.payment.create(create_payment_json, function (error, payment) {
+        if (error) {
+            throw error;
+        } else {
+            for (let i = 0; i < payment.links.length; i++) {
+                if (payment.links[i].rel === 'approval_url') {
+                    res.redirect(payment.links[i].href);
+                }
+            }
+
+        }
+    });
+}
+
+exports.payPalSuccess = (req, res) => {
+    const payerId = req.query.PayerID;
+    const paymentId = req.query.paymentId;
+
+    const execute_payment_json = {
+        "payer_id": payerId,
+        "transactions": [{
+            "amount": {
+                "currency": "USD",
+                "total": req.session.cart.totalPrice
+            }
+        }]
+    };
+    paypal.payment.execute(paymentId, execute_payment_json, function(error, payment) {
+        if (error) {
+            console.log(error.response);
+            throw error;
+        } else {
+            console.log(JSON.stringify(payment));
+            res.send('Mua hàng thành công...');
+        }
+    });
+}
+
+
+exports.payPalCancel = (req, res) => {
+    res.send('Đơn hàng đã hủy !!!');
+}
