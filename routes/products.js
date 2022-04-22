@@ -45,4 +45,11 @@ router.get('/api/list-sortDesc-products', productController.sortDescProducts);
 
 router.get('/api/list-products', productController.listProducts);
 
+router.post('/pay', productController.payPal);
+
+router.get('/pay/success', productController.payPalSuccess);
+
+router.get('/pay/cancel', productController.payPalCancel);
+
+
 module.exports = router;
