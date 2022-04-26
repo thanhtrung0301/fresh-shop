@@ -2971,3 +2971,15 @@ tbody {
     padding-inline: 5px !important;
     text-decoration: underline !important;
 }
+
+.box-notify {
+    background-color: #b0b435;
+    width: 20%;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 100px auto;
+}
