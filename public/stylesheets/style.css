@@ -2751,14 +2751,14 @@
 
 .form-label-login { 
     transition: 0.3s;
-    transform: translateY(-42px) translateX(-150px);
+    transform: translateY(-42px) translateX(20px);
     font-size: 18px;
     position: absolute;
     opacity: 0;
 }
 
 .form-control:focus ~ .form-label-login {
-    transform: translateY(-65px) translateX(-150px);
+    transform: translateY(-65px);
     background-color: #262626;
     z-index: 1;
     color: #fff;
@@ -2964,4 +2964,10 @@ thead {
 
 tbody {
     text-align: center;
+}
+
+.link-review {
+    color: #000000 !important;
+    padding-inline: 5px !important;
+    text-decoration: underline !important;
 }

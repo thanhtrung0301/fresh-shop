@@ -72,7 +72,7 @@
 
 .product-pagination a{
   display: inline-block;
-  color: black;
+  color: black !important;
   padding: 10px 20px;
   margin-inline: 10px;
   font-size: 18px;
