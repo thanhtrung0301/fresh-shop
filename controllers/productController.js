@@ -281,8 +281,8 @@ exports.payPal = (req, res) => {
             "payment_method": "paypal"
         },
         "redirect_urls": {
-            "return_url": "http://localhost:3000/products/pay/success",
-            "cancel_url": "http://localhost:3000/products/pay/cancel"
+            "return_url": "http://172.104.33.240:3000/products/pay/success",
+            "cancel_url": "http://172.104.33.240:3000/products/pay/cancel"
         },
         "transactions": [{
             "item_list": {
