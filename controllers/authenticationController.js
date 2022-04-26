@@ -2,7 +2,7 @@ const authenticationService = require('../models/services/authenticationService'
 
 
 exports.register = async (req, res, next) => {
-    await authenticationService.register(req.body.username, req.body.password, req.body.c_password, req.body.firstname, req.body.lastname, req.body.address, req.body.phonenumber, req.body.email);
+    await authenticationService.register(req.body.username, req.body.password, req.body.c_password, req.body.firstname, req.body.lastname, req.body.address, req.body.phonenumber, req.body.email, '/images/avatar-none.png');
 
     res.redirect('/login');
 }

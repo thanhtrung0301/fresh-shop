@@ -25,18 +25,20 @@
                                 <h3 class="mb-0 fw-normal text-white">My account</h3>
                             </div>
                             <div class="col-4 text-right">
-                                <a href="#!" class="btn btn-sm btn-primary">Settings</a>
+                                <form action="/my-account/update-avatar" method="post" enctype="multipart/form-data">
+                                    <input type="file" hidden id="upload-avatar" name="avatar">
+                                    <button type="submit" class="btn btn-sm btn-primary">Settings</button>
+                                </form>
                             </div>
                         </div>
 
                         <div class="card-body">
                              {{#if user}}
                             <label for="upload-avatar">
-                                <img src="/images/avatar-none.png" alt="" id="member-info-img">
+                                <img src="{{user.avatar}}" alt="" id="member-info-img">
                             </label>
                     
                             <form action="/my-account/info" method="post">
-                                <input type="file" hidden id="upload-avatar" name="avatar">
                                 <h2 class="mb-2 text-white">User Information</h2>
                                 <div class="pl-lg-4">
                                     <div class="row">

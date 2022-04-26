@@ -17,8 +17,6 @@ exports.accountInfo = (req, res, next) => {
 }
 
 exports.updateInfoUser = async (req, res, next) => {
-    console.log(req.body.address);
-
     req.user = await authenticationService.updateInfoUser(req.user.username, req.body.firstname, req.body.lastname, req.body.address, req.body.phonenumber, req.body.email);
     
     req.login(req.user, function(err) {
@@ -27,6 +25,11 @@ exports.updateInfoUser = async (req, res, next) => {
       });
 
     
+}
+
+
+exports.avatarUser = async (username, avatar) => {
+    await authenticationService.updateAvatar(username, avatar);
 }
 
 exports.order = (req, res) => {
