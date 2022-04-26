@@ -36,7 +36,7 @@ const GOOGLE_CLIENT_SECRET = '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';
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/google/callback",
+    callbackURL: "http://172.104.33.240:3000/google/callback",
     passReqToCallback: true
   },
   async function(request, accessToken, refreshToken, profile, done) {
@@ -77,7 +77,7 @@ const FACEBOOK_APP_SECRET = 'c5e3208fd97f06cd37a7e02108d096b0';
 passport.use(new FacebookStrategy({
   clientID: FACEBOOK_APP_ID,
   clientSecret: FACEBOOK_APP_SECRET,
-  callbackURL: "http://localhost:3000/facebook/callback"
+  callbackURL: "http://172.104.33.240:3000/facebook/callback"
 },
   function(accessToken, refreshToken, profile, cb) {
     console.log(profile);
