@@ -31,8 +31,12 @@
 
                         <div class="card-body">
                              {{#if user}}
-                            <img src="/images/member/member-1.jpg" alt="" id="member-info-img">
-                            <form method="post">
+                            <label for="upload-avatar">
+                                <img src="/images/avatar-none.png" alt="" id="member-info-img">
+                            </label>
+                    
+                            <form action="/my-account/info" method="post">
+                                <input type="file" hidden id="upload-avatar" name="avatar">
                                 <h2 class="mb-2 text-white">User Information</h2>
                                 <div class="pl-lg-4">
                                     <div class="row">

@@ -1,0 +1,98 @@
+<!-- Start All Title Box -->
+    <div class="all-title-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>My Order</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active">Order</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End All Title Box -->
+
+<div class="container-order">
+    <article class="card-order">
+        <div class="card-order-body" id="wrapper-order">
+
+        </div>
+    </article>
+
+    <span class="product-pagination mt-3">
+            
+    </span>
+</div>
+
+
+<script>
+    function changePage(apiLink, pageIndex) {
+        $.getJSON(apiLink, function(orders) {
+            // Render pagination
+            const pageCurrent = parseInt($('.current').text());
+            const pages = orders.length;
+            $('.product-pagination').empty();
+            if(pageIndex == -1)
+                pageIndex =  pageCurrent > 1 ? pageCurrent - 1 : 1;
+            else if(pageIndex == 0)
+                    pageIndex = pageCurrent <  pages ? pageCurrent + 1 : pages;
+                    
+            $('.product-pagination').append(`<a onClick="changePage('${apiLink}', -1)"><i class="fa fa-angle-left" aria-hidden="true"></i></a>`);
+            for(let i = 1; i < pages + 1; i++)
+                $('.product-pagination').append(`<a onClick="changePage('${apiLink}', this.innerText)">${i}</a>`);
+            $('.product-pagination').append(`<a onClick="changePage('${apiLink}', 0)"><i class="fa fa-angle-right" aria-hidden="true"></i></a>`);
+            
+            // Add class to current page
+            let start = (pageIndex - 1);
+            let end = pageIndex;
+            orders = orders.slice(start, end);
+            const pageList = $('.product-pagination a');
+            Array.from(pageList).forEach(function(page){
+                page.classList.remove('current');
+            })
+            pageList[pageIndex].classList.add('current');
+            
+            // Render orders
+            $('.card-order-body').empty();
+            
+            orders.forEach(function(order) {
+                $('.card-order-body').append(` <h3 class="ml-4">Order ID: ${order._id}</h3>
+                                                        <article class="card-order">
+                                                            <div class="card-order-body row  ml-5" id="order-detail">
+                                                                <div class="col"> <strong>Place On:</strong> ${order.placeOn.date} </div>
+                                                                <div class="col"> <strong>Shipping BY:</strong>  BLUEDART, | <i class="fa fa-phone"></i> +1598675986 </div>
+                                                                <div class="col"> <strong>Status:</strong>  ${order.status} </div>
+                                                                <div class="col"> <strong>Tracking #: </strong>${order.payment.type} - ${order.payment.payerID} </div>
+                                                            </div>
+                                                        </article>
+                                                        <div class="track">
+                                                            <div class="step active"> <span class="order-icon"> <i class="fa fa-check"></i> </span> <span class="text">Order confirmed</span> </div>
+                                                            <div class="step active"> <span class="order-icon"> <i class="fa fa-user"></i> </span> <span class="text"> Picked by courier</span> </div>
+                                                            <div class="step"> <span class="order-icon"> <i class="fa fa-truck"></i> </span> <span class="text"> On the way </span> </div>
+                                                            <div class="step"> <span class="order-icon"> <i class="fa fa-box"></i> </span> <span class="text">Ready for pickup</span> </div>
+                                                        </div>
+                                                        <hr>
+                                                        <ul class="row" id="list-order-product"></ul>`);
+
+                const orderList = order.items;
+                Object.keys(orderList).forEach(function(index) {
+                    console.log(orderList[index])
+                    $('#list-order-product').append(`<li class="col-md-4">
+                                                    <figure class="itemside mb-3">
+                                                        <div class="aside"><img src="${orderList[index].item.image}" class="order-img border"></div>
+                                                        <figcaption class="info align-self-center">
+                                                            <p class="order-title">${orderList[index].item.name} <br> Quantity: ${orderList[index].qty}</p> <span class="text-muted">$${orderList[index].price} </span>
+                                                        </figcaption>
+                                                    </figure>
+                                                </li>`);
+                })
+
+                $('#wrapper-order').append(`<h3 class="text-center font-weight-bold">Total: $${order.amount}</h3`)
+            })
+        })
+    }
+
+    changePage('/my-account/api/list-orders', 1);
+</script>
