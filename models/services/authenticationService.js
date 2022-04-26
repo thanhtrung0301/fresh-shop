@@ -38,6 +38,7 @@ exports.updateInfoUser = async (username, firstname, lastname, address, phonenum
         if (err) throw err;
         console.log("1 document updated");
     });
+    return await db().collection('user').findOne({username})
 }
 
 
