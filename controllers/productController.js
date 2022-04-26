@@ -1,5 +1,6 @@
 const { list, getFilterProducts, getFilterSortProducts, getFilterProductsByType, getProductByID, getProductsByName, getSortProductsByName, getProductsByNameType, sortProducts } = require('../models/services/productService');
 const Cart = require('../models/cart');
+const orderService = require('../models/services/orderService');
 let totalProducts, totalVegetables, totalFruits;
 
 exports.list = async (req, res, next) => {
@@ -104,8 +105,9 @@ exports.checkout = (req, res, next) => {
 
 exports.detail = async (req, res, next) => {
     const product = await getProductByID(req.params.productId);
+    const productsRelate = await getFilterProductsByType(0, 1000, product.category);
 
-    res.render('products/product-detail', {products: product, image: product.image, name: product.name, price: product.price, description: product.description});
+    res.render('products/product-detail', {products: productsRelate, image: product.image, name: product.name, price: product.price, description: product.description});
 }
 
 
@@ -309,6 +311,12 @@ exports.payPalSuccess = (req, res) => {
             throw error;
         } else {
             console.log(JSON.stringify(payment));
+            const order = {userID: req.user._id, placeOn:{date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString()}, payment: {type: 'PayPal', payerID: payerId, paymentID: paymentId}, paymentStatus: 'Completed', status: 'Shipping', amount: req.session.cart.totalPrice, items: req.session.cart.items};
+            orderService.insertOrder(order);
+            
+            const cart = new Cart({});
+            req.session.cart = cart;
+
             res.send('Mua hàng thành công...');
         }
     });
