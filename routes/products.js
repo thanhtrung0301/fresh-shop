@@ -23,6 +23,10 @@ router.get('/checkout', productController.checkout);
 
 router.get('/:productId', productController.detail);
 
+router.post('/leave-review', productController.leaveReview);
+
+router.get('/api/list-reviews/:productID', productController.listReviews);
+
 router.get('/api/filter-products/:priceStart&:priceEnd', productController.filterProducts);
 
 router.get('/api/filter-sortAsc-products/:priceStart&:priceEnd', productController.filterSortAscProducts);

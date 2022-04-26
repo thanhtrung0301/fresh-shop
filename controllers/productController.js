@@ -1,6 +1,7 @@
 const { list, getFilterProducts, getFilterSortProducts, getFilterProductsByType, getProductByID, getProductsByName, getSortProductsByName, getProductsByNameType, sortProducts } = require('../models/services/productService');
 const Cart = require('../models/cart');
 const orderService = require('../models/services/orderService');
+const reviewService = require('../models/services/reviewService');
 let totalProducts, totalVegetables, totalFruits;
 
 exports.list = async (req, res, next) => {
@@ -107,7 +108,24 @@ exports.detail = async (req, res, next) => {
     const product = await getProductByID(req.params.productId);
     const productsRelate = await getFilterProductsByType(0, 1000, product.category);
 
-    res.render('products/product-detail', {products: productsRelate, image: product.image, name: product.name, price: product.price, description: product.description});
+    res.render('products/product-detail', {products: productsRelate, image: product.image, name: product.name, price: product.price, description: product.description, productID: product._id});
+}
+
+
+exports.leaveReview = async(req, res) => {
+    console.log(req.body.productID);
+    console.log(req.body.review);
+
+    const review = {user: {userID: req.user._id, avatar: req.user.avatar, name: req.user.firstname+' '+req.user.lastname}, productID: req.body.productID, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString(), content: req.body.review};
+    reviewService.insertReview(review);
+
+    res.redirect('back');
+}
+
+exports.listReviews = async(req, res) => { 
+    const reviews = await reviewService.getReviewtByProductID(req.params.productID);
+
+    res.send(reviews);
 }
 
 
