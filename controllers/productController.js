@@ -281,8 +281,8 @@ exports.payPal = (req, res) => {
             "payment_method": "paypal"
         },
         "redirect_urls": {
-            "return_url": "http://172.104.33.240:3000/products/pay/success",
-            "cancel_url": "http://172.104.33.240:3000/products/pay/cancel"
+            "return_url": "http://localhost:3000/products/pay/success",
+            "cancel_url": "http://localhost:3000/products/pay/cancel"
         },
         "transactions": [{
             "item_list": {
@@ -335,12 +335,12 @@ exports.payPalSuccess = (req, res) => {
             const cart = new Cart({});
             req.session.cart = cart;
 
-            res.send('Mua hàng thành công...');
+            res.render('products/payment-success', {layout: false});
         }
     });
 }
 
 
 exports.payPalCancel = (req, res) => {
-    res.send('Đơn hàng đã hủy !!!');
+    res.render('products/payment-cancel', {layout: false});
 }
