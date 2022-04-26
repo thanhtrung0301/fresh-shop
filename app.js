@@ -5,7 +5,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
-const bodyParser = require('body-parser');
+const multer  = require('multer')
 
 const passport = require('./models/passport');
 const indexRouter = require('./routes/index');
@@ -16,6 +16,8 @@ const aboutRouter = require('./routes/about');
 const myAccountRouter = require('./routes/my-account');
 const productsRouter = require('./routes/products');
 const authenticationRouter = require('./routes/authentication');
+const upload = multer({ dest: 'uploads/' })
+
 
 const app = express();
 
@@ -25,7 +27,6 @@ app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -39,6 +40,7 @@ app.use(passport.authenticate('session'));
 
 app.use(function (req, res, next) {
   res.locals.user = req.user;
+  console.log('TEst',req.user)
   res.locals.session = req.session;
   next();
 });
